@@ -1,0 +1,12 @@
+package com.hms.hospitalmanagement.model;
+
+public enum NotificationType {
+    APPOINTMENT_BOOKED,
+    APPOINTMENT_APPROVED,
+    APPOINTMENT_REJECTED,
+    APPOINTMENT_ON_HOLD,
+    APPOINTMENT_CANCELLED,
+    APPOINTMENT_COMPLETED,
+    PAYMENT_RECORDED,
+    GENERAL
+}

@@ -1,0 +1,7 @@
+node_modules/
+Backend/HMS/target/
+frontend/dist/
+target/
+*.env
+.env*
+Backend/HMS/uploads/

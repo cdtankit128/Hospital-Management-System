@@ -1,0 +1,2 @@
+-- Test data initialization is handled by DataInitializer.java
+-- This file is kept for reference/future use
