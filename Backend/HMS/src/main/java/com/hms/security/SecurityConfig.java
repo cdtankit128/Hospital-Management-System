@@ -177,8 +177,8 @@ public class SecurityConfig {
         // Allowed headers (allow all for flexibility)
         configuration.setAllowedHeaders(Arrays.asList("*"));
         
-        // Expose Authorization header so frontend can read it
-        configuration.setExposedHeaders(Arrays.asList("Authorization"));
+        // Expose both headers so frontend can read them if needed
+        configuration.setExposedHeaders(Arrays.asList("Authorization", "X-Auth-Token"));
         
         // Allow credentials (needed for cookies/auth headers)
         configuration.setAllowCredentials(true);

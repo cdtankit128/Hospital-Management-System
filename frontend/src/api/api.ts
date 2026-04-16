@@ -15,7 +15,11 @@ const api = axios.create({
 api.interceptors.request.use((config: any) => {
   const token = localStorage.getItem('token')
   if (token) {
-    config.headers.Authorization = `Bearer ${token}`
+    if (config.headers && typeof config.headers.set === 'function') {
+      config.headers.set('X-Auth-Token', token)
+    } else {
+      config.headers['X-Auth-Token'] = token
+    }
   }
   return config
 })

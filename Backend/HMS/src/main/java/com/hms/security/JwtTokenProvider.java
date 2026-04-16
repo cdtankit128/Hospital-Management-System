@@ -64,8 +64,9 @@ public class JwtTokenProvider {
             
             return true;
         } catch (Exception e) {
-            // Only log at debug level to avoid spam from invalid/fake tokens
-            // System.err.println("JWT validation failed: " + e.getMessage());
+            // Log the actual exception so we can fix the bug!
+            System.err.println("JWT validation failed: " + e.getMessage());
+            e.printStackTrace();
             return false;
         }
     }

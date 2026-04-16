@@ -83,6 +83,13 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     }
 
     private String getTokenFromRequest(HttpServletRequest request) {
+        // Check for custom header first (bypass Vercel SSO interference)
+        String customToken = request.getHeader("X-Auth-Token");
+        if (customToken != null && !customToken.trim().isEmpty()) {
+            return customToken;
+        }
+        
+        // Fallback to standard Authorization header
         String bearerToken = request.getHeader("Authorization");
         if (bearerToken != null && bearerToken.startsWith("Bearer ")) {
             return bearerToken.substring(7);
