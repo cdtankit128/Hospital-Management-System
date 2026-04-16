@@ -11,7 +11,7 @@ import {
 import { useNavigate, Link } from 'react-router-dom'
 import { useAuth } from '../auth/AuthContext'
 import axios from 'axios'
-import { BACKEND_URL } from '../api/config'
+import { BACKEND_URL, IS_NGROK } from '../api/config'
 
 interface PatientLoginData {
   patientLoginId: string
@@ -28,7 +28,7 @@ interface SnackbarState {
 const patientApi = axios.create({
   baseURL: BACKEND_URL ? `${BACKEND_URL}/api` : '/api',
   withCredentials: !BACKEND_URL,
-  ...(BACKEND_URL && {
+  ...(IS_NGROK && {
     headers: { 'ngrok-skip-browser-warning': 'true' },
   }),
 })

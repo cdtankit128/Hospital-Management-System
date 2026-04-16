@@ -1,10 +1,10 @@
 import axios, { AxiosResponse, AxiosError } from 'axios'
-import { BACKEND_URL } from './config'
+import { BACKEND_URL, IS_NGROK } from './config'
 
 const api = axios.create({
   baseURL: BACKEND_URL ? `${BACKEND_URL}/api` : '/api',
-  withCredentials: !BACKEND_URL, // disable credentials for cross-origin Ngrok requests
-  ...(BACKEND_URL && {
+  withCredentials: !BACKEND_URL, // disable credentials for cross-origin requests
+  ...(IS_NGROK && {
     headers: {
       'ngrok-skip-browser-warning': 'true', // bypass Ngrok's browser warning page
     },
