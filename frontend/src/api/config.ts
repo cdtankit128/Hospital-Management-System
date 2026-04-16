@@ -5,7 +5,13 @@ import axios from 'axios'
  * - When VITE_API_BASE_URL is set (e.g. Ngrok), returns the full URL (e.g. "https://abc123.ngrok-free.app")
  * - When not set (local dev), returns empty string so relative paths work with Vite proxy
  */
-export const BACKEND_URL: string = import.meta.env.VITE_API_BASE_URL || ''
+const ENV_BACKEND_URL = (import.meta.env.VITE_API_BASE_URL || '').trim().replace(/\/+$/, '')
+const IS_VERCEL_HOST = typeof window !== 'undefined' && window.location.hostname.endsWith('.vercel.app')
+const FORCE_SAME_ORIGIN = import.meta.env.VITE_FORCE_SAME_ORIGIN === 'true'
+
+// On Vercel, prefer same-origin `/api` and proxy via vercel.json rewrites.
+// This avoids client-side DNS resolution failures for Railway domains.
+export const BACKEND_URL: string = (FORCE_SAME_ORIGIN || IS_VERCEL_HOST) ? '' : ENV_BACKEND_URL
 
 /**
  * Whether we're running in Ngrok tunnel mode.
