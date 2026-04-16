@@ -158,14 +158,15 @@ public class SecurityConfig {
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
         
-        // Allowed origins (React frontend + LAN + Ngrok tunnels)
+        // Allowed origins (React frontend + LAN + Ngrok + Vercel)
         configuration.setAllowedOriginPatterns(Arrays.asList(
                 "http://localhost:*",
                 "https://localhost:*",
                 "http://192.168.*.*:*",
                 "https://*.ngrok-free.app",
                 "https://*.ngrok-free.dev",
-                "https://*.ngrok.io"
+                "https://*.ngrok.io",
+                "https://*.vercel.app"
         ));
         
         // Allowed HTTP methods
