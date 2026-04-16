@@ -40,7 +40,7 @@ import {
   BookAppointmentRequest,
   AppointmentResponse,
 } from '../services/appointmentAPI'
-import { paymentPublicAPI, PaymentRecord, razorpayAPI, RazorpayOrderResponse } from '../services/paymentAPI'
+import { PaymentRecord, razorpayAPI, RazorpayOrderResponse } from '../services/paymentAPI'
 
 interface Doctor {
   fullName: string
@@ -279,23 +279,6 @@ const BookAppointment = () => {
       })
     } catch (error: any) {
       showSnackbar(error.response?.data?.error || 'Failed to create payment order', 'error')
-      setPaymentLoading(false)
-    }
-  }
-
-  const handleConfirmPayment = async () => {
-    // This is now handled by Razorpay checkout callback
-    // Keep as fallback for manual confirmation
-    if (!paymentOrder) return
-    setPaymentLoading(true)
-    try {
-      await paymentPublicAPI.confirmPayment(paymentOrder.id, `ONLINE-${Date.now()}`)
-      setPaymentConfirmed(true)
-      showSnackbar('Payment confirmed!', 'success')
-      setActiveStep(3) // Go to Confirmation
-    } catch (error: any) {
-      showSnackbar(error.response?.data?.error || 'Payment confirmation failed', 'error')
-    } finally {
       setPaymentLoading(false)
     }
   }

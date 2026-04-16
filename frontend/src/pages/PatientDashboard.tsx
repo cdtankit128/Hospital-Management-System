@@ -117,7 +117,7 @@ const PatientDashboard = () => {
   const [refundLoading, setRefundLoading] = useState(false)
 
   // Real-time server time
-  const { formatDate, formatDateTime } = useServerTime()
+  const { formatDateTime } = useServerTime()
 
   // Real-time notifications — uses patientName as identifier (name-based for patients)
   const {

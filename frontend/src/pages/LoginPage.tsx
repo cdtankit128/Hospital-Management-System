@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect, useCallback } from 'react'
+import { useState, useRef, useEffect, useCallback } from 'react'
 import { useNavigate } from 'react-router-dom'
 import {
   Box,
@@ -107,16 +107,6 @@ const emblemReveal = keyframes`
 const ringRotate = keyframes`
   from { transform: rotate(0deg); }
   to { transform: rotate(360deg); }
-`
-
-/* Ring pulse glow */
-const ringPulse = keyframes`
-  0%, 100% {
-    box-shadow: 0 0 30px rgba(30,100,200,0.2), inset 0 0 20px rgba(30,100,200,0.08);
-  }
-  50% {
-    box-shadow: 0 0 55px rgba(30,130,255,0.45), inset 0 0 35px rgba(30,130,255,0.2);
-  }
 `
 
 /* Slow outer ring glow pulse for emblem */
@@ -385,18 +375,6 @@ const cardSlideIn = keyframes`
   }
 `
 
-/* Placeholder card gentle pulse */
-const placeholderPulse = keyframes`
-  0%, 100% {
-    border-color: rgba(255,255,255,0.15);
-    box-shadow: 0 8px 32px rgba(0,0,0,0.3);
-  }
-  50% {
-    border-color: rgba(100,180,255,0.25);
-    box-shadow: 0 8px 32px rgba(0,0,0,0.3), 0 0 20px rgba(100,180,255,0.08);
-  }
-`
-
 /* ── Avatar scan ring: rotates once ── */
 const scanRing = keyframes`
   0% {
@@ -554,7 +532,6 @@ const LoginPage = () => {
 
   // Doctor preview state
   const [doctorPreview, setDoctorPreview] = useState<{ fullName: string; specialization: string; designation: string; hasAvatar: boolean } | null>(null)
-  const [previewLoading, setPreviewLoading] = useState(false)
   const previewTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
   const [avatarTimestamp, setAvatarTimestamp] = useState(Date.now())
   const [loginShrinking, setLoginShrinking] = useState(false)
@@ -591,7 +568,6 @@ const LoginPage = () => {
       return
     }
     try {
-      setPreviewLoading(true)
       const res = await patientApi.get(`/auth/doctor-preview/${username.trim()}`)
       if (res.data?.found) {
         setDoctorPreview({ fullName: res.data.fullName, specialization: res.data.specialization, designation: res.data.designation || '', hasAvatar: res.data.hasAvatar })
@@ -602,7 +578,6 @@ const LoginPage = () => {
     } catch {
       setDoctorPreview(null)
     } finally {
-      setPreviewLoading(false)
     }
   }
 

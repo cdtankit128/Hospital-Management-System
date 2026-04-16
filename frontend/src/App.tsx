@@ -1,7 +1,6 @@
 import { BrowserRouter as Router, Routes, Route, Navigate, useLocation } from 'react-router-dom'
 import ProtectedRoute from './auth/PrivateRoute'
 import LoginPage from './pages/LoginPage'
-import PatientLoginPage from './pages/PatientLoginPage'
 import RegisterPage from './pages/RegisterPage'
 import UnauthorizedPage from './pages/UnauthorizedPage'
 import AdminDashboard from './pages/AdminDashboard'

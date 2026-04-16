@@ -14,6 +14,7 @@ export interface LoginResponse {
   token: string
   fullName?: string
   specialization?: string
+  designation?: string
 }
 
 export const authAPI = {

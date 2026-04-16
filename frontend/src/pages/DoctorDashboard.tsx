@@ -36,7 +36,6 @@ import { keyframes } from '@mui/system'
 import { useNavigate, useSearchParams } from 'react-router-dom'
 import { useAuth } from '../auth/AuthContext'
 import LogoutIcon from '@mui/icons-material/Logout'
-import SavePatientRecordForm from '../components/SavePatientRecordForm'
 import { doctorAPI } from '../services/doctorAPI'
 import { appointmentDoctorAPI, AppointmentResponse } from '../services/appointmentAPI'
 import CheckCircleOutlineIcon from '@mui/icons-material/CheckCircleOutline'
@@ -49,7 +48,6 @@ import EventNoteIcon from '@mui/icons-material/EventNote'
 import MedicalServicesIcon from '@mui/icons-material/MedicalServices'
 import FileDownloadIcon from '@mui/icons-material/FileDownload'
 import PendingActionsIcon from '@mui/icons-material/PendingActions'
-import SaveIcon from '@mui/icons-material/Save'
 import EmailIcon from '@mui/icons-material/Email'
 import ScienceIcon from '@mui/icons-material/Science'
 import MedicationIcon from '@mui/icons-material/Medication'
@@ -58,7 +56,6 @@ import SendIcon from '@mui/icons-material/Send'
 import CameraAltIcon from '@mui/icons-material/CameraAlt'
 import NotificationsIcon from '@mui/icons-material/Notifications'
 import FiberManualRecordIcon from '@mui/icons-material/FiberManualRecord'
-import ScheduleIcon from '@mui/icons-material/Schedule'
 import AssignmentTurnedInIcon from '@mui/icons-material/AssignmentTurnedIn'
 import Snackbar from '@mui/material/Snackbar'
 import Alert from '@mui/material/Alert'
@@ -424,7 +421,7 @@ const DoctorDashboard = () => {
     duration: '',
     instructions: '',
   })
-  const [selectedPatientForAppointment, setSelectedPatientForAppointment] = useState<any>(null)
+  const [, setSelectedPatientForAppointment] = useState<any>(null)
   const [selectedPatientForPrescription, setSelectedPatientForPrescription] = useState<any>(null)
   const [searchPhone, setSearchPhone] = useState('')
   const [searchResult, setSearchResult] = useState<any>(null)
@@ -554,15 +551,6 @@ const DoctorDashboard = () => {
     }
   }
 
-  const formatTime = (slot: string) => {
-    if (!slot) return ''
-    const [h, m] = slot.split(':')
-    const hour = parseInt(h)
-    const ampm = hour >= 12 ? 'PM' : 'AM'
-    const displayHour = hour > 12 ? hour - 12 : hour === 0 ? 12 : hour
-    return `${displayHour}:${m} ${ampm}`
-  }
-
   const getStatusColor = (status: string) => {
     switch (status) {
       case 'APPROVED': return { bg: '#C8E6C9', color: '#2E7D32' }
@@ -651,7 +639,7 @@ const DoctorDashboard = () => {
   }
 
   // Real-time server time
-  const { formatDate, formatTime: fmtTime, formatDateTime } = useServerTime()
+  const { formatDateTime } = useServerTime()
 
   // Real-time notifications via WebSocket
   const {
@@ -2229,7 +2217,6 @@ const DoctorDashboard = () => {
                     return
                   }
                   const patient = myPatients.find((p: any) => String(p.patientId) === String(appointmentData.patientId))
-                  const response = await appointmentDoctorAPI.getMyAppointments(username || '')
                   // Use the doctorAPI's authenticated endpoint
                   const bookData = {
                     patientName: patient?.patientName || '',

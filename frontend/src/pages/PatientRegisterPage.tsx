@@ -78,7 +78,7 @@ const PatientRegisterPage = () => {
 
     setLoading(true)
     try {
-      const res = await axios.post(apiUrl('/api/patients'), {
+      await axios.post(apiUrl('/api/patients'), {
         name: fullName.trim(),
         age: Number(age),
         gender,

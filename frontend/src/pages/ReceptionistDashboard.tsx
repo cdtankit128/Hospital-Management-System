@@ -38,7 +38,7 @@ import axios from 'axios'
 import { apiUrl } from '../api/config'
 import { useNotifications } from '../hooks/useNotifications'
 import { useServerTime } from '../hooks/useServerTime'
-import { paymentReceptionistAPI, PaymentRecord as PaymentRecordType, razorpayAPI } from '../services/paymentAPI'
+import { paymentReceptionistAPI, razorpayAPI } from '../services/paymentAPI'
 
 // ─── Types ───
 interface Doctor {
@@ -77,7 +77,7 @@ interface PaymentRecord {
   doctorName: string
   specialization: string
   amount: number
-  paymentMethod: 'CASH' | 'QR'
+  paymentMethod: 'CASH' | 'QR' | 'ONLINE'
   paymentStatus: string
   transactionId: string
   receptionistUsername: string
