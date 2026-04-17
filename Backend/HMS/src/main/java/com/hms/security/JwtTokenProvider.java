@@ -26,11 +26,17 @@ public class JwtTokenProvider {
     }
 
     public String generateToken(String username, String role) {
+        long effectiveExpirationMs = jwtExpirationMs;
+        // If it's un reasonably small (e.g., somebody put 86400 thinking it's seconds), scale it up
+        if (effectiveExpirationMs < 1000000) {
+            effectiveExpirationMs = effectiveExpirationMs * 1000;
+        }
+
         return Jwts.builder()
                 .setSubject(username)
                 .claim("role", role)
                 .setIssuedAt(new Date())
-                .setExpiration(new Date(System.currentTimeMillis() + jwtExpirationMs))
+                .setExpiration(new Date(System.currentTimeMillis() + effectiveExpirationMs))
                 .signWith(jwtKey, SignatureAlgorithm.HS512)
                 .compact();
     }

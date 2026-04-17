@@ -85,7 +85,13 @@ public class UserService {
     }
 
     public List<User> getDoctorsList() {
-        return userRepository.findByRoleAndEnabledTrue(Role.DOCTOR);
+        // Fetch all doctors, then filter locally. 
+        // This avoids Postgres "operator does not exist: bigint = boolean" 
+        // issues if the 'enabled' column was created as a numeric type in Supabase.
+        return userRepository.findByRole(Role.DOCTOR)
+                .stream()
+                .filter(User::isEnabled)
+                .collect(java.util.stream.Collectors.toList());
     }
 
     public List<User> getAllDoctors() {

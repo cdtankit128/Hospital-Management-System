@@ -17,8 +17,10 @@ api.interceptors.request.use((config: any) => {
   if (token) {
     if (config.headers && typeof config.headers.set === 'function') {
       config.headers.set('X-Auth-Token', token)
+      config.headers.set('Authorization', `Bearer ${token}`)
     } else {
       config.headers['X-Auth-Token'] = token
+      config.headers['Authorization'] = `Bearer ${token}`
     }
   }
   return config

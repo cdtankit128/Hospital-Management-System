@@ -66,8 +66,16 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(RuntimeException.class)
     public ResponseEntity<?> handleRuntimeException(RuntimeException e) {
+        // Log the exception securely
+        e.printStackTrace();
+        
+        // Let Spring Security handle access denied exceptions appropriately instead of 500s
+        if (e.getClass().getName().contains("AccessDeniedException")) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Access Denied");
+        }
+        
         return ResponseEntity
-                .status(HttpStatus.UNAUTHORIZED)
-                .body(new LoginResponse(e.getMessage(), null, null, null, null, null, null, null, null));
+                .status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body(new LoginResponse("Internal Server Error: " + e.getMessage(), null, null, null, null, null, null, null, null));
     }
 }
