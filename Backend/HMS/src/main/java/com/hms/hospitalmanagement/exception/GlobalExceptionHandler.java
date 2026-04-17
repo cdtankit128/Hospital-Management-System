@@ -69,9 +69,13 @@ public class GlobalExceptionHandler {
         // Log the exception securely
         e.printStackTrace();
         
-        // Let Spring Security handle access denied exceptions appropriately instead of 500s
+        // Let Spring Security handle access denied and authentication exceptions appropriately instead of 500s
         if (e.getClass().getName().contains("AccessDeniedException")) {
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Access Denied");
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(new LoginResponse("Access Denied", null, null, null, null, null, null, null, null));
+        } else if (e.getClass().getName().contains("AuthenticationException")) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new LoginResponse("Unauthorized request", null, null, null, null, null, null, null, null));
+        } else if (e.getClass().getName().contains("MultipartException")) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new LoginResponse("Invalid multipart request: " + e.getMessage(), null, null, null, null, null, null, null, null));
         }
         
         return ResponseEntity
