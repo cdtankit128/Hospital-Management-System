@@ -1,16 +1,20 @@
 package com.hms.service;
 
-import com.sendgrid.*;
-import com.sendgrid.helpers.mail.Mail;
-import com.sendgrid.helpers.mail.objects.Attachments;
-import com.sendgrid.helpers.mail.objects.Content;
-import com.sendgrid.helpers.mail.objects.Email;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.web.client.RestTemplate;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.ResponseEntity;
 
-import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Base64;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 @Service
 @Slf4j
@@ -19,78 +23,68 @@ public class EmailService {
     private static final String HOSPITAL_NAME = "Chandigarh University Hospital";
     private static final String HOSPITAL_PHONE = "+91 9939339811";
 
-    @Value("${sendgrid.api.key}")
-    private String sendGridApiKey;
+    @Value("${brevo.api.key}")
+    private String brevoApiKey;
 
-    @Value("${sendgrid.from.email}")
+    @Value("${brevo.from.email}")
     private String fromEmail;
+
+    private final RestTemplate restTemplate = new RestTemplate();
 
     // ==================== CORE SEND METHOD ====================
 
     public void sendEmail(String to, String subject, String htmlBody) {
-        Email from = new Email(fromEmail, HOSPITAL_NAME);
-        Email toEmail = new Email(to);
-        Content content = new Content("text/html", htmlBody);
-        Mail mail = new Mail(from, subject, toEmail, content);
-
-        SendGrid sg = new SendGrid(sendGridApiKey);
-        Request request = new Request();
-
-        try {
-            request.setMethod(Method.POST);
-            request.setEndpoint("mail/send");
-            request.setBody(mail.build());
-
-            Response response = sg.api(request);
-
-            if (response.getStatusCode() >= 200 && response.getStatusCode() < 300) {
-                log.info("Email sent successfully to {} (status: {})", to, response.getStatusCode());
-            } else {
-                log.error("SendGrid error (status {}): {}", response.getStatusCode(), response.getBody());
-                throw new RuntimeException("SendGrid error (HTTP " + response.getStatusCode() + "): " + response.getBody());
-            }
-        } catch (IOException e) {
-            log.error("Failed to send email to {}: {}", to, e.getMessage(), e);
-            throw new RuntimeException("Failed to send email: " + e.getMessage(), e);
-        }
+        sendEmailWithAttachment(to, subject, htmlBody, null, null);
     }
 
     // ==================== SEND EMAIL WITH ATTACHMENT ====================
 
     public void sendEmailWithAttachment(String to, String subject, String htmlBody,
                                          byte[] attachmentBytes, String attachmentFilename) {
-        Email from = new Email(fromEmail, HOSPITAL_NAME);
-        Email toEmail = new Email(to);
-        Content content = new Content("text/html", htmlBody);
-        Mail mail = new Mail(from, subject, toEmail, content);
+        String url = "https://api.brevo.com/v3/smtp/email";
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.set("api-key", brevoApiKey);
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        headers.setAccept(Collections.singletonList(MediaType.APPLICATION_JSON));
+
+        Map<String, Object> body = new HashMap<>();
+
+        Map<String, String> sender = new HashMap<>();
+        sender.put("name", HOSPITAL_NAME);
+        sender.put("email", fromEmail);
+        body.put("sender", sender);
+
+        List<Map<String, String>> toList = new ArrayList<>();
+        Map<String, String> toObj = new HashMap<>();
+        toObj.put("email", to);
+        toList.add(toObj);
+        body.put("to", toList);
+
+        body.put("subject", subject);
+        body.put("htmlContent", htmlBody);
 
         if (attachmentBytes != null && attachmentBytes.length > 0) {
-            Attachments attachment = new Attachments();
-            attachment.setContent(Base64.getEncoder().encodeToString(attachmentBytes));
-            attachment.setType("application/pdf");
-            attachment.setFilename(attachmentFilename != null ? attachmentFilename : "report.pdf");
-            attachment.setDisposition("attachment");
-            mail.addAttachments(attachment);
+            List<Map<String, String>> attachments = new ArrayList<>();
+            Map<String, String> attachObj = new HashMap<>();
+            attachObj.put("content", Base64.getEncoder().encodeToString(attachmentBytes));
+            attachObj.put("name", attachmentFilename != null ? attachmentFilename : "report.pdf");
+            attachments.add(attachObj);
+            body.put("attachment", attachments);
         }
 
-        SendGrid sg = new SendGrid(sendGridApiKey);
-        Request request = new Request();
+        HttpEntity<Map<String, Object>> request = new HttpEntity<>(body, headers);
 
         try {
-            request.setMethod(Method.POST);
-            request.setEndpoint("mail/send");
-            request.setBody(mail.build());
-
-            Response response = sg.api(request);
-
-            if (response.getStatusCode() >= 200 && response.getStatusCode() < 300) {
-                log.info("Email with attachment sent successfully to {} (status: {})", to, response.getStatusCode());
+            ResponseEntity<String> response = restTemplate.postForEntity(url, request, String.class);
+            if (response.getStatusCode().is2xxSuccessful()) {
+                log.info("Email sent successfully to {} via Brevo (status: {})", to, response.getStatusCode());
             } else {
-                log.error("SendGrid error (status {}): {}", response.getStatusCode(), response.getBody());
-                throw new RuntimeException("SendGrid error (HTTP " + response.getStatusCode() + "): " + response.getBody());
+                log.error("Brevo error (status {}): {}", response.getStatusCode(), response.getBody());
+                throw new RuntimeException("Brevo error (HTTP " + response.getStatusCode() + "): " + response.getBody());
             }
-        } catch (IOException e) {
-            log.error("Failed to send email with attachment to {}: {}", to, e.getMessage(), e);
+        } catch (Exception e) {
+            log.error("Failed to send email to {}: {}", to, e.getMessage(), e);
             throw new RuntimeException("Failed to send email: " + e.getMessage(), e);
         }
     }

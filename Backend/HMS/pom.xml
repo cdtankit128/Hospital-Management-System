@@ -89,11 +89,7 @@
 			<artifactId>spring-boot-starter-test</artifactId>
 			<scope>test</scope>
 		</dependency>
-		<dependency>
-			<groupId>com.sendgrid</groupId>
-			<artifactId>sendgrid-java</artifactId>
-			<version>4.10.3</version>
-		</dependency>
+		<!-- Removed SendGrid, using RestTemplate for Brevo -->
 		<!-- WebSocket for real-time notifications -->
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
