@@ -60,9 +60,7 @@ export const emailAPI = {
     if (data.reportPdf) {
       formData.append('reportPdf', data.reportPdf)
     }
-    return api.post('/email/lab-report', formData, {
-      headers: { 'Content-Type': 'multipart/form-data' },
-    }).then((res) => res.data)
+    return api.post('/email/lab-report', formData).then((res) => res.data)
   },
 
   sendMedicineReminder: (data: MedicineReminderRequest) =>
