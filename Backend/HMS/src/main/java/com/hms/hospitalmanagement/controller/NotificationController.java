@@ -37,6 +37,7 @@ public class NotificationController {
     /** Get all notifications for the authenticated user */
     @GetMapping
     public ResponseEntity<List<Notification>> getMyNotifications(Authentication auth) {
+        if (auth == null || !auth.isAuthenticated()) return ResponseEntity.status(401).build();
         String username = auth.getName();
         return ResponseEntity.ok(notificationService.getNotifications(username));
     }
@@ -44,6 +45,9 @@ public class NotificationController {
     /** Get only unread notifications */
     @GetMapping("/unread")
     public ResponseEntity<List<Notification>> getUnread(Authentication auth) {
+        if (auth == null || !auth.isAuthenticated()) {
+            return ResponseEntity.status(401).build();
+        }
         String username = auth.getName();
         return ResponseEntity.ok(notificationService.getUnreadNotifications(username));
     }
@@ -63,6 +67,7 @@ public class NotificationController {
     /** Count of unread notifications */
     @GetMapping("/unread-count")
     public ResponseEntity<Map<String, Long>> getUnreadCount(Authentication auth) {
+        if (auth == null || !auth.isAuthenticated()) return ResponseEntity.status(401).build();
         String username = auth.getName();
         long count = notificationService.countUnread(username);
         return ResponseEntity.ok(Map.of("count", count));
@@ -85,6 +90,7 @@ public class NotificationController {
     /** Mark all notifications for current user as read */
     @PutMapping("/read-all")
     public ResponseEntity<Void> markAllAsRead(Authentication auth) {
+        if (auth == null || !auth.isAuthenticated()) return ResponseEntity.status(401).build();
         String username = auth.getName();
         notificationService.markAllAsRead(username);
         return ResponseEntity.ok().build();
